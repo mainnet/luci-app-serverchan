@@ -1,16 +1,26 @@
 #!/bin/sh /etc/rc.common
+
 START=99
 STOP=10
 
-
 start() {
-flag=$(ps | grep "/usr/bin/serverchan/serverchan" | grep -v "grep" | wc -l)
-if [ $flag -eq 0 ] ;then
-/usr/bin/serverchan/serverchan &
-else
-/usr/bin/serverchan/serverchan crontab
-fi
+	state=`pgrep -f "/usr/bin/serverchan/serverchan"`
+	if [ ! -z "$state" ]; then
+		restart
+	else
+		/usr/bin/serverchan/serverchan &
+	fi
+	echo "serverchan is starting now ..."
 }
+
 stop() {
-kill -9 `pgrep -f /usr/bin/serverchan/serverchan`
+	kill -9 `pgrep -f "/usr/bin/serverchan/serverchan"` 2>/dev/null
+	echo "serverchan exit ..."
+}
+
+restart(){
+	stop
+	sleep 1
+	start
+	echo "restarted."
 }
